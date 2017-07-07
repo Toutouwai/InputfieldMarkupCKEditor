@@ -1,0 +1,60 @@
+<?php
+/**
+ *
+ * Markup CKEditor
+ *
+ * @author Robin Sallis
+ *
+ * ProcessWire 3.x
+ * Copyright (C) 2011 by Ryan Cramer
+ * Licensed under GNU/GPL v2, see LICENSE.TXT
+ *
+ * http://www.processwire.com
+ * http://www.ryancramer.com
+ *
+ */
+
+class InputfieldMarkupCKEditor extends InputfieldMarkup {
+
+	/**
+	 * Module information
+	 */
+	public static function getModuleInfo() {
+		return array(
+			'title' => 'Markup CKEditor',
+			'summary' => 'Inputfield for displaying markup editable via CKEditor. For use with Form Builder module.',
+			'version' => 1,
+			'author' => 'Robin Sallis',
+			'href' => 'https://github.com/Toutouwai/InputfieldMarkupCKEditor',
+			'icon' => 'wpforms',
+		);
+	}
+
+	/**
+	 * Config inputfields
+	 */
+	public function ___getConfigInputfields() {
+
+		// Get InputfieldMarkup config fields
+		$inputfields = parent::___getConfigInputfields();
+
+		// Remove the original markup text field
+		$inputfields->remove('markupText');
+
+		// Get textformatters field
+		$textformatters = $inputfields->getChildByName('textformatters');
+
+		// Add new CKEditor markup text field before textformatters field
+		$f = $this->modules->get('InputfieldCKEditor');
+		$f->attr('id+name', 'markupText');
+		$f->attr('value', $this->markupText);
+		$f->attr('rows', 10);
+		$f->label = $this->_('Markup Text');
+		$toolbar = str_replace('PWImage, ', '', $f->toolbar);
+		$f->toolbar = $toolbar;
+		$inputfields->insertBefore($f, $textformatters);
+
+		return $inputfields;
+	}
+	
+}

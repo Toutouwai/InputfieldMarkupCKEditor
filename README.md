@@ -1,4 +1,4 @@
-# Markup CKEditor
+# Markup CKEditor (for Form Builder)
 
 A module for ProcessWire CMS/CMF. An inputfield for displaying markup editable via CKEditor.
 

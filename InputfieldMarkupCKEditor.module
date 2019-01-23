@@ -23,11 +23,25 @@ class InputfieldMarkupCKEditor extends InputfieldMarkup {
 		return array(
 			'title' => 'Markup CKEditor',
 			'summary' => 'Inputfield for displaying markup editable via CKEditor. For use with Form Builder module.',
-			'version' => 1,
+			'version' => '0.1.1',
 			'author' => 'Robin Sallis',
 			'href' => 'https://github.com/Toutouwai/InputfieldMarkupCKEditor',
 			'icon' => 'wpforms',
 		);
+	}
+
+	/**
+	 * Method called right before Inputfield markup is rendered
+	 *
+	 * @param Inputfield|InputfieldWrapper|null $parent
+	 * @param bool $renderValueMode
+	 * @return bool
+	 *
+	 */
+	public function renderReady(Inputfield $parent = null, $renderValueMode = false) {
+		// Set skipLabel if the noLabel option is checked
+		if($this->noLabel) $this->skipLabel = Inputfield::skipLabelHeader;
+		return parent::renderReady($parent, $renderValueMode);
 	}
 
 	/**
@@ -46,12 +60,21 @@ class InputfieldMarkupCKEditor extends InputfieldMarkup {
 
 		// Add new CKEditor markup text field before textformatters field
 		$f = $this->modules->get('InputfieldCKEditor');
-		$f->attr('id+name', 'markupText');
-		$f->attr('value', $this->markupText);
-		$f->attr('rows', 10);
+		$f_name = 'markupText';
+		$f->name = $f_name;
+		$f->id = $f_name;
 		$f->label = $this->_('Markup Text');
-		$toolbar = str_replace('PWImage, ', '', $f->toolbar);
-		$f->toolbar = $toolbar;
+		$f->rows = 10;
+		$f->value = $this->$f_name;
+		$f->toolbar = str_replace('PWImage, ', '', $f->toolbar);
+		$inputfields->insertBefore($f, $textformatters);
+
+		// Checkbox field for option to hide inputfield label
+		$f = $this->modules->get('InputfieldCheckbox');
+		$f_name = 'noLabel';
+		$f->name = $f_name;
+		$f->label = $this->_("Hide inputfield label in form");
+		$f->checked = $this->$f_name === 1 ? 'checked' : '';
 		$inputfields->insertBefore($f, $textformatters);
 
 		return $inputfields;

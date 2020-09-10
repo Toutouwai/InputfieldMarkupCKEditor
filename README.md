@@ -14,7 +14,9 @@ In your form settings, add a new field of type "Markup CKEditor". Enter the text
 
 ## Configuration
 
-In the module config you can set the items for the CKEditor toolbar. If you want to insert images in your markup field then add "Image" to the toolbar items to enable the standard CKEditor image plugin. The ProcessWire image plugin is not usable because there in a FormBuilder form there is no page to store images in.
+In the module config you can set items for the CKEditor toolbar that will apply to all Markup CKEditor fields.
+
+If you want to insert images in your markup field then add "Image" to the toolbar items to enable the standard CKEditor image plugin. The ProcessWire image plugin is not usable because in a FormBuilder form there is no page to store images in. Don't double-click on images in CKEditor or else PW will throw an exception because it expects CKEditor to be associated with a page.
 
 ## Screenshots
 

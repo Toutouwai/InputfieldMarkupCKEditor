@@ -58,8 +58,8 @@ class InputfieldMarkupCKEditor extends InputfieldMarkup implements ConfigurableM
 		// PW Image plugin is not supported
 		$toolbar_config = isset($this->toolbar) ? $this->toolbar : $cke->toolbar;
 		$cke->toolbar = str_replace('PWImage, ', '', $toolbar_config);
-		// Allow all plugins (e.g. CKEditor standard image plugin)
-		$cke->removePlugins = '';
+		// Allow all plugins apart from PWImage
+		$cke->removePlugins = 'PWImage';
 		$inputfields->insertBefore($cke, $textformatters);
 
 		// Checkbox field for option to hide inputfield label

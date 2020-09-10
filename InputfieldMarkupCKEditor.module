@@ -1,20 +1,6 @@
-<?php
-/**
- *
- * Markup CKEditor
- *
- * @author Robin Sallis
- *
- * ProcessWire 3.x
- * Copyright (C) 2011 by Ryan Cramer
- * Licensed under GNU/GPL v2, see LICENSE.TXT
- *
- * http://www.processwire.com
- * http://www.ryancramer.com
- *
- */
+<?php namespace ProcessWire;
 
-class InputfieldMarkupCKEditor extends InputfieldMarkup {
+class InputfieldMarkupCKEditor extends InputfieldMarkup implements ConfigurableModule {
 
 	/**
 	 * Module information
@@ -23,10 +9,11 @@ class InputfieldMarkupCKEditor extends InputfieldMarkup {
 		return array(
 			'title' => 'Markup CKEditor',
 			'summary' => 'Inputfield for displaying markup editable via CKEditor. For use with Form Builder module.',
-			'version' => '0.1.1',
+			'version' => '0.1.2',
 			'author' => 'Robin Sallis',
 			'href' => 'https://github.com/Toutouwai/InputfieldMarkupCKEditor',
 			'icon' => 'wpforms',
+			'requires' => 'ProcessWire>=3.0.16, PHP>=5.4.0',
 		);
 	}
 
@@ -48,6 +35,7 @@ class InputfieldMarkupCKEditor extends InputfieldMarkup {
 	 * Config inputfields
 	 */
 	public function ___getConfigInputfields() {
+		$modules = $this->wire('modules');
 
 		// Get InputfieldMarkup config fields
 		$inputfields = parent::___getConfigInputfields();
@@ -59,18 +47,24 @@ class InputfieldMarkupCKEditor extends InputfieldMarkup {
 		$textformatters = $inputfields->getChildByName('textformatters');
 
 		// Add new CKEditor markup text field before textformatters field
-		$f = $this->modules->get('InputfieldCKEditor');
+		/** @var InputfieldCKEditor $cke */
+		$cke = $modules->get('InputfieldCKEditor');
 		$f_name = 'markupText';
-		$f->name = $f_name;
-		$f->id = $f_name;
-		$f->label = $this->_('Markup Text');
-		$f->rows = 10;
-		$f->value = $this->$f_name;
-		$f->toolbar = str_replace('PWImage, ', '', $f->toolbar);
-		$inputfields->insertBefore($f, $textformatters);
+		$cke->name = $f_name;
+		$cke->id = $f_name;
+		$cke->label = $this->_('Markup Text');
+		$cke->rows = 10;
+		$cke->value = $this->$f_name;
+		// PW Image plugin is not supported
+		$toolbar_config = isset($this->toolbar) ? $this->toolbar : $cke->toolbar;
+		$cke->toolbar = str_replace('PWImage, ', '', $toolbar_config);
+		// Allow all plugins (e.g. CKEditor standard image plugin)
+		$cke->removePlugins = '';
+		$inputfields->insertBefore($cke, $textformatters);
 
 		// Checkbox field for option to hide inputfield label
-		$f = $this->modules->get('InputfieldCheckbox');
+		/** @var InputfieldCheckbox $f */
+		$f = $modules->get('InputfieldCheckbox');
 		$f_name = 'noLabel';
 		$f->name = $f_name;
 		$f->label = $this->_("Hide inputfield label in form");
@@ -79,5 +73,28 @@ class InputfieldMarkupCKEditor extends InputfieldMarkup {
 
 		return $inputfields;
 	}
-	
+
+	/**
+	 * Config inputfields
+	 *
+	 * @param InputfieldWrapper $inputfields
+	 */
+	public function getModuleConfigInputfields($inputfields) {
+		$modules = $this->wire('modules');
+
+		// Get CKEditor config fields
+		/** @var InputfieldCKEditor $cke */
+		$cke = $modules->get('InputfieldCKEditor');
+		$wrapper = $cke->getConfigInputfields();
+		// Get toolbar field
+		$toolbar = $wrapper->getChildByName('toolbar');
+		$toolbar_config = isset($this->toolbar) ? $this->toolbar : $toolbar->value;
+		// PW Image plugin is not supported
+		$toolbar_config = str_replace('PWImage, ', '', $toolbar_config);
+		$toolbar->notes = str_replace('PWImage, ', '', $toolbar->notes);
+		$toolbar->value = $toolbar_config;
+
+		$inputfields->add($toolbar);
+	}
+
 }

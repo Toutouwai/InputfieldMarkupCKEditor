@@ -12,8 +12,9 @@ In the Form Builder module settings, add "MarkupCKEditor" to "Inputfield types t
 
 In your form settings, add a new field of type "Markup CKEditor". Enter the text you want to show in this field using "Markup Text" on the "Details" tab.
 
-There is an option to hide the inputfield label in the rendered form.
-*Note: this option is not currently working in the "Basic" framework due to an [issue with FormBuilder v0.3.4](https://processwire.com/talk/topic/19728-checkbox-label-not-skipped-for-basic-output-framework/).*
+## Configuration
+
+In the module config you can set the items for the CKEditor toolbar. If you want to insert images in your markup field then add "Image" to the toolbar items to enable the standard CKEditor image plugin. The ProcessWire image plugin is not usable because there in a FormBuilder form there is no page to store images in.
 
 ## Screenshots
 

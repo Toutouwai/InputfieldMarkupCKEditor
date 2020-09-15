@@ -9,7 +9,7 @@ class InputfieldMarkupCKEditor extends InputfieldMarkup implements ConfigurableM
 		return array(
 			'title' => 'Markup CKEditor',
 			'summary' => 'Inputfield for displaying markup editable via CKEditor. For use with Form Builder module.',
-			'version' => '0.1.2',
+			'version' => '0.1.3',
 			'author' => 'Robin Sallis',
 			'href' => 'https://github.com/Toutouwai/InputfieldMarkupCKEditor',
 			'icon' => 'wpforms',
@@ -58,8 +58,10 @@ class InputfieldMarkupCKEditor extends InputfieldMarkup implements ConfigurableM
 		// PW Image plugin is not supported
 		$toolbar_config = isset($this->toolbar) ? $this->toolbar : $cke->toolbar;
 		$cke->toolbar = str_replace('PWImage, ', '', $toolbar_config);
-		// Allow all plugins apart from PWImage
-		$cke->removePlugins = 'PWImage';
+		// Allow all core CKEditor plugins
+		$cke->removePlugins = '';
+		// Remove PWImage extra plugin
+		$cke->extraPlugins = 'pwlink, sourcedialog';
 		$inputfields->insertBefore($cke, $textformatters);
 
 		// Checkbox field for option to hide inputfield label

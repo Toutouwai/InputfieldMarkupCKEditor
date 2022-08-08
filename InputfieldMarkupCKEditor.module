@@ -9,7 +9,7 @@ class InputfieldMarkupCKEditor extends InputfieldMarkup implements ConfigurableM
 		return array(
 			'title' => 'Markup CKEditor',
 			'summary' => 'Inputfield for displaying markup editable via CKEditor. For use with Form Builder module.',
-			'version' => '0.1.3',
+			'version' => '0.1.4',
 			'author' => 'Robin Sallis',
 			'href' => 'https://github.com/Toutouwai/InputfieldMarkupCKEditor',
 			'icon' => 'wpforms',
@@ -32,10 +32,24 @@ class InputfieldMarkupCKEditor extends InputfieldMarkup implements ConfigurableM
 	}
 
 	/**
+	 * Hookable method for users who want to do advanced customisation of CKEditor inputfield
+	 *
+	 * @param InputfieldCKEditor $cke
+	 * @param FormBuilderForm $form
+	 * @param FormBuilderField $field
+	 */
+	public function ___ckeReady($cke, $form, $field) {
+		return $cke;
+	}
+
+	/**
 	 * Config inputfields
+	 *
+	 * Note: ProcessFormBuilder::buildEditField() calls this method twice
 	 */
 	public function ___getConfigInputfields() {
-		$modules = $this->wire('modules');
+		$modules = $this->wire()->modules;
+		$input = $this->wire()->input;
 
 		// Get InputfieldMarkup config fields
 		$inputfields = parent::___getConfigInputfields();
@@ -45,6 +59,16 @@ class InputfieldMarkupCKEditor extends InputfieldMarkup implements ConfigurableM
 
 		// Get textformatters field
 		$textformatters = $inputfields->getChildByName('textformatters');
+		
+		// Get form and field
+		$form = null;
+		$field = null;
+		/** @var ProcessFormBuilder $pfb */
+		$pfb = $this->wire()->process;
+		if($pfb instanceof ProcessFormBuilder) {
+			$form = $pfb->getForm($input->get->int('id'));
+			if($form) $field = $form->getFieldByName($input->get->name('name'));
+		}
 
 		// Add new CKEditor markup text field before textformatters field
 		/** @var InputfieldCKEditor $cke */
@@ -62,6 +86,8 @@ class InputfieldMarkupCKEditor extends InputfieldMarkup implements ConfigurableM
 		$cke->removePlugins = '';
 		// Remove PWImage extra plugin
 		$cke->extraPlugins = 'pwlink, sourcedialog';
+		// Call hookable method
+		$cke = $this->ckeReady($cke, $form, $field);
 		$inputfields->insertBefore($cke, $textformatters);
 
 		// Checkbox field for option to hide inputfield label
@@ -82,7 +108,7 @@ class InputfieldMarkupCKEditor extends InputfieldMarkup implements ConfigurableM
 	 * @param InputfieldWrapper $inputfields
 	 */
 	public function getModuleConfigInputfields($inputfields) {
-		$modules = $this->wire('modules');
+		$modules = $this->wire()->modules;
 
 		// Get CKEditor config fields
 		/** @var InputfieldCKEditor $cke */

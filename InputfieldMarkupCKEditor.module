@@ -9,7 +9,7 @@ class InputfieldMarkupCKEditor extends InputfieldMarkup implements ConfigurableM
 		return array(
 			'title' => 'Markup CKEditor',
 			'summary' => 'Inputfield for displaying markup editable via CKEditor. For use with Form Builder module.',
-			'version' => '0.1.4',
+			'version' => '0.1.5',
 			'author' => 'Robin Sallis',
 			'href' => 'https://github.com/Toutouwai/InputfieldMarkupCKEditor',
 			'icon' => 'wpforms',
@@ -66,8 +66,11 @@ class InputfieldMarkupCKEditor extends InputfieldMarkup implements ConfigurableM
 		/** @var ProcessFormBuilder $pfb */
 		$pfb = $this->wire()->process;
 		if($pfb instanceof ProcessFormBuilder) {
-			$form = $pfb->getForm($input->get->int('id'));
-			if($form) $field = $form->getFieldByName($input->get->name('name'));
+			// Use older FormBuilder methods for better backwards compatibility
+			// $form = $pfb->getForm($input->get->int('id'));
+			// if($form) $field = $form->getFieldByName($input->get->name('name'));
+			$form = $pfb->forms->load($input->get->int('id'));
+			if($form) $field = $form->get($input->get->name('name'));
 		}
 
 		// Add new CKEditor markup text field before textformatters field
